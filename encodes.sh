@@ -22,7 +22,7 @@ expect {
         send \"${PW}\n\"
     }
 }
-intract
+interact
 "
 
 fileName=${filepath##*/}
