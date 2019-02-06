@@ -62,7 +62,7 @@ if [[ ${dirIdList[@]} -gt 1 ]]; then
 fi
 
 if [[ ${dirIdList[@]} -eq 0 ]]; then
-    dirIdList+=$(/usr/local/bin/gdrive mkdir ${filepath%%/*} | cut -d " " -f 2)
+    dirIdList+=$(/usr/local/bin/gdrive mkdir --parent ${gdrive_recdir} ${filepath%%/*} | cut -d " " -f 2)
 fi
 
 /usr/local/bin/gdrive upload --parent ${dirIdList[0]} $encodedFileName
