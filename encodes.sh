@@ -10,7 +10,7 @@ filepath=${querystring:9}
 cd /tmp/
 
 expect -c "
-set timeout 5
+set timeout -1
 spawn env LANG=ja_JP.UTF-8 /usr/bin/sftp conoha@$(cat /var/www/html/ip/addresses/shiriuchi):\"array1/Chinachu_REC/${filepath}\"
 
 expect {
@@ -22,12 +22,16 @@ expect {
         send \"${PW}\n\"
     }
 }
-interact
+
+wait
+
+expect eof
+exit
 "
 
 fileName=${filepath##*/}
 if [[ ! -f /tmp/$fileName ]]; then
-    exit 1
+    exit 2
 fi
 
 encodedFileName=${fileName%%.*}.mp4
@@ -45,7 +49,7 @@ encodedFileName=${fileName%%.*}.mp4
                       /tmp/$encodedFileName
 
 if [[ ! -f /tmp/$encodedFileName ]]; then
-    exit 2
+    exit 3
 fi
 
 dirIdList=()
@@ -54,17 +58,17 @@ do
     if [[ ${Name} = ${filepath%%/*} ]]; then
         dirIdList+=("$Id")
     fi
-done < <(/usr/local/bin/gdrive list --query \
+done < <(/usr/local/bin/gdrive -c /usr/share/httpd/.gdrive list --query \
     '"${gdrive_recdir}" in parents and trashed = false and fullText contains "${filepath%%/*}"')
 
 if [[ ${dirIdList[@]} -gt 1 ]]; then
-    exit 3
+    exit 4
 fi
 
 if [[ ${dirIdList[@]} -eq 0 ]]; then
-    dirIdList+=$(/usr/local/bin/gdrive mkdir --parent ${gdrive_recdir} ${filepath%%/*} | cut -d " " -f 2)
+    dirIdList+=$(/usr/local/bin/gdrive -c /usr/share/httpd/.gdrive mkdir --parent ${gdrive_recdir} ${filepath%%/*} | cut -d " " -f 2)
 fi
 
-/usr/local/bin/gdrive upload --parent ${dirIdList[0]} $encodedFileName
+/usr/local/bin/gdrive -c /usr/share/httpd/.gdrive upload --parent ${dirIdList[0]} $encodedFileName
 
 exit 0
