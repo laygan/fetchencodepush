@@ -11,7 +11,7 @@ cd /tmp/
 
 expect -c "
 set timeout -1
-spawn env LANG=ja_JP.UTF-8 /usr/bin/sftp conoha@$(cat /var/www/html/ip/addresses/shiriuchi):\"array1/Chinachu_REC/${filepath}\"
+spawn env LANG=ja_JP.UTF-8 /usr/bin/sftp conoha@"$(cat /var/www/html/ip/addresses/shiriuchi)":\"array1/Chinachu_REC/"${filepath}"\"
 
 expect {
     \"Are you sure you want to continue connecting (yes/no)?\" {
@@ -19,11 +19,9 @@ expect {
         exp_continue
     }
     \"Password:\" {
-        send \"${PW}\n\"
+        send \""${PW}"\n\"
     }
 }
-
-wait
 
 expect eof
 exit
