@@ -53,11 +53,11 @@ fi
 dirIdList=()
 while read -r Id Name Type Size Created
 do
-    if [[ ${Name} = ${filepath%%/*} ]]; then
+    if [[ $Name = ${filepath%%/*} ]]; then
         dirIdList+=("$Id")
     fi
 done < <(/usr/local/bin/gdrive -c /usr/share/httpd/.gdrive list --query \
-    '"${gdrive_recdir}" in parents and trashed = false and fullText contains "${filepath%%/*}"')
+    '"'${gdrive_recdir}'" in parents and trashed = false and name = "'${filepath%%/*}'"')
 
 if [[ ${dirIdList[@]} -gt 1 ]]; then
     exit 4
